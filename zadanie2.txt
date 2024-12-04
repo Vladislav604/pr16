@@ -1,0 +1,56 @@
+import sqlite3
+
+# Подключение к базе данных
+connection = sqlite3.connect("university.db")
+cursor = connection.cursor()
+
+# Добавление объектов в таблицу Courses
+cursor.execute("INSERT INTO Courses (id, name, time_start, time_end) VALUES (1, 'python', '21.07.21', '21.08.21')")
+cursor.execute("INSERT INTO Courses (id, name, time_start, time_end) VALUES (2, 'java', '13.07.21', '16.08.21')")
+
+# Добавление объектов в таблицу Students
+cursor.execute("INSERT INTO Students (id, name, surname, age, city) VALUES (1, 'Max', 'Brooks', 24, 'Spb')")
+cursor.execute("INSERT INTO Students (id, name, surname, age, city) VALUES (2, 'John', 'Stones', 15, 'Spb')")
+cursor.execute("INSERT INTO Students (id, name, surname, age, city) VALUES (3, 'Andy', 'Wings', 45, 'Manhester')")
+cursor.execute("INSERT INTO Students (id, name, surname, age, city) VALUES (4, 'Kate', 'Brooks', 34, 'Spb')")
+
+# Добавление объектов в таблицу Student_courses
+cursor.execute("INSERT INTO Student_courses (student_id, course_id) VALUES (1, 1)")
+cursor.execute("INSERT INTO Student_courses (student_id, course_id) VALUES (2, 1)")
+cursor.execute("INSERT INTO Student_courses (student_id, course_id) VALUES (3, 1)")
+cursor.execute("INSERT INTO Student_courses (student_id, course_id) VALUES (4, 2)")
+
+# Подтверждение изменений
+connection.commit()
+
+# Получить всех студентов старше 30 лет
+cursor.execute("SELECT * FROM Students WHERE age > 30")
+students_over_30 = cursor.fetchall()
+print("Студенты старше 30 лет:")
+for student in students_over_30:
+    print(student)
+
+# Получить всех студентов, которые проходят курс по python
+cursor.execute('''SELECT Students.* 
+                  FROM Students
+                  JOIN Student_courses ON Students.id = Student_courses.student_id
+                  JOIN Courses ON Courses.id = Student_courses.course_id
+                  WHERE Courses.name = 'python' ''')
+students_python = cursor.fetchall()
+print("\nСтуденты, проходящие курс по python:")
+for student in students_python:
+    print(student)
+
+# Получить всех студентов, которые проходят курс по python и из Spb
+cursor.execute('''SELECT Students.* 
+                  FROM Students
+                  JOIN Student_courses ON Students.id = Student_courses.student_id
+                  JOIN Courses ON Courses.id = Student_courses.course_id
+                  WHERE Courses.name = 'python' AND Students.city = 'Spb' ''')
+students_python_spb = cursor.fetchall()
+print("\nСтуденты, проходящие курс по python и из Spb:")
+for student in students_python_spb:
+    print(student)
+
+# Закрытие соединения
+connection.close()
